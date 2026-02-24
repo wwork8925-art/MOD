@@ -1,1 +1,33 @@
-<p>navbar works!</p>
+<nav class="navbar">
+  <div class="navbar-brand">
+    <a routerLink="/hostels" class="brand-link">
+      <span class="brand-icon">&#127968;</span>
+      <span class="brand-name">نظام السكنات</span>
+    </a>
+  </div>
+
+  <ul class="navbar-links">
+    <li><a routerLink="/hostels" class="nav-link">السكنات</a></li>
+
+    @if (auth.isAdmin()) {
+      <li><a routerLink="/admin" class="nav-link nav-link-admin">لوحة التحكم</a></li>
+    }
+  </ul>
+
+  <div class="navbar-auth">
+    @if (auth.isLoggedIn()) {
+      <div class="user-info">
+        @if (auth.user()?.profileImageUrl) {
+          <img [src]="auth.user()!.profileImageUrl" alt="profile" class="avatar" />
+        } @else {
+          <div class="avatar-placeholder">{{ auth.user()!.username.charAt(0).toUpperCase() }}</div>
+        }
+        <span class="username">{{ auth.user()!.username }}</span>
+      </div>
+      <button class="btn btn-outline-white" (click)="logout()">تسجيل الخروج</button>
+    } @else {
+      <a routerLink="/login" class="btn btn-outline-white">تسجيل الدخول</a>
+      <a routerLink="/register" class="btn btn-white">إنشاء حساب</a>
+    }
+  </div>
+</nav>

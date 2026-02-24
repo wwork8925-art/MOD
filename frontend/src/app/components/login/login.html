@@ -1,1 +1,54 @@
-<p>login works!</p>
+<div class="auth-page">
+  <div class="auth-card">
+    <div class="auth-header">
+      <div class="auth-icon">&#128274;</div>
+      <h1>تسجيل الدخول</h1>
+      <p>مرحباً بك مجدداً في نظام السكنات</p>
+    </div>
+
+    @if (error()) {
+      <div class="alert alert-error">{{ error() }}</div>
+    }
+
+    <form (ngSubmit)="submit()" #f="ngForm">
+      <div class="form-group">
+        <label for="username">اسم المستخدم</label>
+        <input
+          id="username"
+          type="text"
+          [(ngModel)]="username"
+          name="username"
+          placeholder="أدخل اسم المستخدم"
+          required
+          autocomplete="username"
+        />
+      </div>
+
+      <div class="form-group">
+        <label for="password">كلمة المرور</label>
+        <input
+          id="password"
+          type="password"
+          [(ngModel)]="password"
+          name="password"
+          placeholder="أدخل كلمة المرور"
+          required
+          autocomplete="current-password"
+        />
+      </div>
+
+      <button type="submit" class="btn btn-primary btn-full" [disabled]="loading()">
+        @if (loading()) {
+          <span class="spinner-sm"></span>
+          <span>جاري تسجيل الدخول...</span>
+        } @else {
+          تسجيل الدخول
+        }
+      </button>
+    </form>
+
+    <p class="auth-footer">
+      ليس لديك حساب؟ <a routerLink="/register">إنشاء حساب جديد</a>
+    </p>
+  </div>
+</div>

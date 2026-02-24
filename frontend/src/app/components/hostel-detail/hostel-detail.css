@@ -1,0 +1,306 @@
+﻿.detail-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.5rem;
+}
+
+.back-link {
+  color: #2563eb;
+  font-weight: 600;
+  font-size: 0.95rem;
+  transition: color 0.2s;
+}
+
+.back-link:hover {
+  color: #1d4ed8;
+  text-decoration: underline;
+}
+
+.detail-layout {
+  display: grid;
+  grid-template-columns: 1fr 300px;
+  gap: 2rem;
+}
+
+@media (max-width: 900px) {
+  .detail-layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Gallery */
+.gallery {
+  margin-bottom: 1.5rem;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.gallery-main {
+  width: 100%;
+  height: 360px;
+  overflow: hidden;
+  background: #e0eaff;
+}
+
+.main-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.gallery-thumbs {
+  display: flex;
+  gap: 0.5rem;
+  padding: 0.5rem 0;
+  overflow-x: auto;
+}
+
+.thumb {
+  width: 70px;
+  height: 55px;
+  object-fit: cover;
+  border-radius: 6px;
+  cursor: pointer;
+  opacity: 0.65;
+  border: 2px solid transparent;
+  transition: opacity 0.2s, border-color 0.2s;
+  flex-shrink: 0;
+}
+
+.thumb.active, .thumb:hover {
+  opacity: 1;
+  border-color: #2563eb;
+}
+
+.no-image-large {
+  text-align: center;
+  font-size: 6rem;
+  padding: 2rem;
+  background: #e0eaff;
+  border-radius: 12px;
+  margin-bottom: 1.5rem;
+}
+
+/* Details Card */
+.hostel-details {
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.hostel-title {
+  font-size: 1.8rem;
+  font-weight: 800;
+  color: #1e3a5f;
+  margin-bottom: 0.5rem;
+}
+
+.hostel-loc {
+  color: #6b7280;
+  font-size: 0.95rem;
+  margin-bottom: 1rem;
+}
+
+.hostel-info-text {
+  background: #f0f4f8;
+  border-radius: 8px;
+  padding: 1rem;
+  margin-bottom: 1.25rem;
+}
+
+.hostel-info-text h3 {
+  font-size: 0.92rem;
+  font-weight: 700;
+  color: #374151;
+  margin-bottom: 0.4rem;
+}
+
+.hostel-info-text p {
+  color: #4b5563;
+  font-size: 0.93rem;
+  line-height: 1.6;
+}
+
+/* Occupancy */
+.occupancy-section h3 {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #1e3a5f;
+  margin-bottom: 0.75rem;
+}
+
+.occ-stats {
+  display: flex;
+  gap: 1.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.occ-stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.occ-value {
+  font-size: 1.6rem;
+  font-weight: 800;
+  color: #2563eb;
+}
+
+.occ-label {
+  font-size: 0.78rem;
+  color: #6b7280;
+}
+
+.occupancy-bar {
+  background: #e5e7eb;
+  border-radius: 99px;
+  height: 10px;
+  overflow: hidden;
+  margin-bottom: 0.4rem;
+}
+
+.occupancy-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #16a34a, #2563eb);
+  border-radius: 99px;
+  transition: width 0.6s ease;
+}
+
+.occ-pct {
+  font-size: 0.85rem;
+  color: #6b7280;
+}
+
+/* Comments */
+.comments-section {
+  margin-top: 0.5rem;
+}
+
+.comment-form {
+  padding: 1.25rem;
+  margin-bottom: 1.5rem;
+}
+
+.comment-textarea {
+  width: 100%;
+  padding: 0.7rem;
+  border: 1.5px solid #d1d5db;
+  border-radius: 8px;
+  resize: vertical;
+  font-family: inherit;
+  font-size: 0.95rem;
+  color: #111;
+  margin-bottom: 0.75rem;
+  transition: border-color 0.2s;
+}
+
+.comment-textarea:focus {
+  outline: none;
+  border-color: #2563eb;
+}
+
+.login-prompt {
+  margin-bottom: 1.5rem;
+  color: #6b7280;
+  font-size: 0.93rem;
+}
+
+.login-prompt a {
+  color: #2563eb;
+  font-weight: 600;
+}
+
+.no-comments {
+  color: #9ca3af;
+  font-style: italic;
+  padding: 1rem 0;
+}
+
+.comment-item {
+  display: flex;
+  gap: 1rem;
+  padding: 1rem 0;
+  border-bottom: 1px solid #f0f4f8;
+}
+
+.comment-item:last-child {
+  border-bottom: none;
+}
+
+.comment-avatar {
+  width: 38px;
+  height: 38px;
+  background: #2563eb;
+  color: #fff;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 0.95rem;
+  flex-shrink: 0;
+}
+
+.comment-body {
+  flex: 1;
+}
+
+.comment-meta {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+  margin-bottom: 0.3rem;
+}
+
+.comment-author {
+  font-weight: 700;
+  font-size: 0.93rem;
+  color: #1e3a5f;
+}
+
+.comment-date {
+  font-size: 0.8rem;
+  color: #9ca3af;
+}
+
+.comment-text {
+  font-size: 0.93rem;
+  color: #374151;
+  line-height: 1.5;
+}
+
+/* Sidebar */
+.sidebar-card {
+  padding: 1.5rem;
+  position: sticky;
+  top: 80px;
+}
+
+.sidebar-card h3 {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #1e3a5f;
+  margin-bottom: 1rem;
+}
+
+.sidebar-note {
+  color: #6b7280;
+  font-size: 0.93rem;
+  margin-bottom: 1rem;
+  line-height: 1.5;
+}
+
+.sidebar-note.occupied {
+  color: #16a34a;
+}
+
+.btn-full {
+  width: 100%;
+  justify-content: center;
+}
+
+.btn-sm {
+  padding: 0.35rem 0.9rem;
+  font-size: 0.85rem;
+}

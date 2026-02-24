@@ -1,1 +1,230 @@
-<p>admin works!</p>
+<div class="page-container">
+  <h1 class="section-title">لوحة التحكم</h1>
+
+  <!-- Tabs -->
+  <div class="tabs">
+    <button class="tab-btn" [class.active]="activeTab() === 'hostels'" (click)="activeTab.set('hostels')">
+      &#127968; السكنات ({{ hostels().length }})
+    </button>
+    <button class="tab-btn" [class.active]="activeTab() === 'users'" (click)="activeTab.set('users')">
+      &#128100; المستخدمون ({{ users().length }})
+    </button>
+    <button class="tab-btn" [class.active]="activeTab() === 'requests'" (click)="activeTab.set('requests')">
+      &#128203; الطلبات ({{ requests().length }})
+    </button>
+  </div>
+
+  <!-- ==================== HOSTELS TAB ==================== -->
+  @if (activeTab() === 'hostels') {
+    <div class="tab-content">
+      <div class="tab-header">
+        <h2>إدارة السكنات</h2>
+        <button class="btn btn-primary" (click)="openAddHostel()" [disabled]="showHostelForm()">+ إضافة سكن</button>
+      </div>
+
+      @if (hostelSuccess()) { <div class="alert alert-success">{{ hostelSuccess() }}</div> }
+
+      <!-- Hostel Form -->
+      @if (showHostelForm()) {
+        <div class="form-card card">
+          <h3>{{ editingHostel() ? 'تعديل سكن' : 'إضافة سكن جديد' }}</h3>
+          @if (hostelError()) { <div class="alert alert-error">{{ hostelError() }}</div> }
+
+          <div class="form-row2">
+            <div class="form-group">
+              <label>اسم السكن *</label>
+              <input type="text" [(ngModel)]="hostelForm.hostelName" [disabled]="!!editingHostel()" placeholder="اسم السكن" />
+            </div>
+            <div class="form-group">
+              <label>الموقع *</label>
+              <input type="text" [(ngModel)]="hostelForm.location" placeholder="مثال: مبنى A" />
+            </div>
+          </div>
+
+          <div class="form-row2">
+            <div class="form-group">
+              <label>الطاقة القصوى *</label>
+              <input type="number" [(ngModel)]="hostelForm.capacity" min="1" />
+            </div>
+            <div class="form-group">
+              <label>عدد السكان الحاليين</label>
+              <input type="number" [(ngModel)]="hostelForm.currentResidents" min="0" />
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>معلومات إضافية</label>
+            <textarea [(ngModel)]="hostelForm.info" rows="3" placeholder="أدخل وصفاً أو تفاصيل..."></textarea>
+          </div>
+
+          <!-- Image Upload -->
+          <div class="form-group">
+            <label>صور السكن</label>
+            <div class="image-tools">
+              <input type="file" accept="image/*" multiple (change)="onImageFilesSelected($event)" id="hostel-imgs" style="display:none" />
+              <label for="hostel-imgs" class="btn btn-secondary btn-sm">
+                @if (imageUploadLoading()) { جاري الرفع... } @else { رفع صور }
+              </label>
+              <div class="url-input">
+                <input type="text" [(ngModel)]="newImageUrl" placeholder="أو أدخل رابط صورة" />
+                <button class="btn btn-outline btn-sm" (click)="addImageUrl()">+</button>
+              </div>
+            </div>
+            @if (hostelForm.imageUrls.length > 0) {
+              <div class="image-previews">
+                @for (url of hostelForm.imageUrls; track url) {
+                  <div class="img-thumb">
+                    <img [src]="url" alt="preview" />
+                    <button class="remove-img" (click)="removeImageUrl(url)">&#10005;</button>
+                  </div>
+                }
+              </div>
+            }
+          </div>
+
+          <div class="form-actions">
+            <button class="btn btn-primary" (click)="saveHostel()" [disabled]="hostelSaving()">
+              @if (hostelSaving()) { جاري... } @else { حفظ }
+            </button>
+            <button class="btn btn-secondary" (click)="cancelHostelForm()">إلغاء</button>
+          </div>
+        </div>
+      }
+
+      <!-- Hostels Table -->
+      @if (hostelsLoading()) {
+        <div class="spinner"></div>
+      } @else {
+        <div class="table-container">
+          <table>
+            <thead>
+              <tr>
+                <th>اسم السكن</th>
+                <th>الموقع</th>
+                <th>الطاقة</th>
+                <th>السكان</th>
+                <th>إجراءات</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (h of hostels(); track h.hostelName) {
+                <tr>
+                  <td><strong>{{ h.hostelName }}</strong></td>
+                  <td>{{ h.location }}</td>
+                  <td>{{ h.capacity }}</td>
+                  <td>{{ h.currentResidents }}</td>
+                  <td>
+                    <button class="btn btn-warning btn-sm" (click)="openEditHostel(h)">تعديل</button>
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      }
+    </div>
+  }
+
+  <!-- ==================== USERS TAB ==================== -->
+  @if (activeTab() === 'users') {
+    <div class="tab-content">
+      <div class="tab-header"><h2>إدارة المستخدمين</h2></div>
+      @if (usersSuccess()) { <div class="alert alert-success">{{ usersSuccess() }}</div> }
+      @if (usersError()) { <div class="alert alert-error">{{ usersError() }}</div> }
+
+      @if (usersLoading()) {
+        <div class="spinner"></div>
+      } @else {
+        <div class="table-container">
+          <table>
+            <thead>
+              <tr>
+                <th>اسم المستخدم</th>
+                <th>الرقم المدني</th>
+                <th>رقم الهاتف</th>
+                <th>السكن</th>
+                <th>الدور</th>
+                <th>إجراءات</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (u of users(); track u.id) {
+                <tr>
+                  <td>
+                    <div class="user-cell">
+                      @if (u.profileImageUrl) {
+                        <img [src]="u.profileImageUrl" class="user-avatar" />
+                      } @else {
+                        <div class="user-avatar-ph">{{ u.username.charAt(0).toUpperCase() }}</div>
+                      }
+                      <span>{{ u.username }}</span>
+                    </div>
+                  </td>
+                  <td>{{ u.civilNumber }}</td>
+                  <td>{{ u.number }}</td>
+                  <td>{{ u.hostelName ?? '—' }}</td>
+                  <td><span class="tag" [class]="u.role === 'Admin' ? 'tag-admin' : 'tag-user'">{{ u.role }}</span></td>
+                  <td class="actions-cell">
+                    <button class="btn btn-warning btn-sm" (click)="toggleRole(u)">
+                      {{ u.role === 'Admin' ? 'جعل مستخدم' : 'جعل أدمن' }}
+                    </button>
+                    <button class="btn btn-danger btn-sm" (click)="deleteUser(u)">حذف</button>
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      }
+    </div>
+  }
+
+  <!-- ==================== REQUESTS TAB ==================== -->
+  @if (activeTab() === 'requests') {
+    <div class="tab-content">
+      <div class="tab-header"><h2>طلبات السكن</h2></div>
+      @if (requestsSuccess()) { <div class="alert alert-success">{{ requestsSuccess() }}</div> }
+      @if (requestsError()) { <div class="alert alert-error">{{ requestsError() }}</div> }
+
+      @if (requestsLoading()) {
+        <div class="spinner"></div>
+      } @else {
+        <div class="table-container">
+          <table>
+            <thead>
+              <tr>
+                <th>المستخدم</th>
+                <th>السكن المطلوب</th>
+                <th>التاريخ</th>
+                <th>الحالة</th>
+                <th>إجراءات</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (r of requests(); track r.id) {
+                <tr>
+                  <td>{{ r.username }}</td>
+                  <td>{{ r.hostelName }}</td>
+                  <td>{{ formatDate(r.createdAt) }}</td>
+                  <td>
+                    <span class="tag" [class]="'tag-' + r.status.toLowerCase()">
+                      @if (r.status === 'Pending') { معلق }
+                      @else if (r.status === 'Approved') { مقبول }
+                      @else { مرفوض }
+                    </span>
+                  </td>
+                  <td class="actions-cell">
+                    @if (r.status === 'Pending') {
+                      <button class="btn btn-success btn-sm" (click)="updateRequestStatus(r, 'Approved')">قبول</button>
+                      <button class="btn btn-danger btn-sm" (click)="updateRequestStatus(r, 'Rejected')">رفض</button>
+                    }
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      }
+    </div>
+  }
+</div>

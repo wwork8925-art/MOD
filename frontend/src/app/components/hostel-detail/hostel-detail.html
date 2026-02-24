@@ -1,1 +1,175 @@
-<p>hostel-detail works!</p>
+<div class="page-container">
+  @if (loading()) {
+    <div style="text-align:center;padding:3rem">
+      <div class="spinner"></div>
+      <p>جاري تحميل بيانات السكن...</p>
+    </div>
+  } @else if (error()) {
+    <div class="alert alert-error">{{ error() }}</div>
+    <a routerLink="/hostels" class="btn btn-secondary">&rarr; العودة</a>
+  } @else if (hostel()) {
+    <!-- Header -->
+    <div class="detail-header">
+      <a routerLink="/hostels" class="back-link">&larr; جميع السكنات</a>
+      <div class="header-actions">
+        @if (auth.isAdmin()) {
+          <a routerLink="/admin" class="btn btn-warning btn-sm">تعديل السكن</a>
+        }
+      </div>
+    </div>
+
+    <div class="detail-layout">
+      <!-- Left Column -->
+      <div class="detail-main">
+        <!-- Image Gallery -->
+        @if (hostel()!.imageUrls && hostel()!.imageUrls.length > 0) {
+          <div class="gallery">
+            <div class="gallery-main">
+              <img
+                [src]="hostel()!.imageUrls[selectedImageIndex()]"
+                [alt]="hostel()!.hostelName"
+                class="main-image"
+              />
+            </div>
+            @if (hostel()!.imageUrls.length > 1) {
+              <div class="gallery-thumbs">
+                @for (url of hostel()!.imageUrls; track url; let i = $index) {
+                  <img
+                    [src]="url"
+                    [alt]="hostel()!.hostelName"
+                    class="thumb"
+                    [class.active]="selectedImageIndex() === i"
+                    (click)="selectedImageIndex.set(i)"
+                  />
+                }
+              </div>
+            }
+          </div>
+        } @else {
+          <div class="no-image-large">&#127968;</div>
+        }
+
+        <!-- Info -->
+        <div class="hostel-details card">
+          <h1 class="hostel-title">{{ hostel()!.hostelName }}</h1>
+          <p class="hostel-loc">&#128205; {{ hostel()!.location }}</p>
+
+          @if (hostel()!.info) {
+            <div class="hostel-info-text">
+              <h3>معلومات إضافية</h3>
+              <p>{{ hostel()!.info }}</p>
+            </div>
+          }
+
+          <!-- Occupancy -->
+          <div class="occupancy-section">
+            <h3>الإشغال</h3>
+            <div class="occ-stats">
+              <div class="occ-stat">
+                <span class="occ-value">{{ hostel()!.currentResidents }}</span>
+                <span class="occ-label">ساكن حالياً</span>
+              </div>
+              <div class="occ-stat">
+                <span class="occ-value">{{ hostel()!.capacity }}</span>
+                <span class="occ-label">الطاقة القصوى</span>
+              </div>
+              <div class="occ-stat">
+                <span class="occ-value">{{ hostel()!.capacity - hostel()!.currentResidents }}</span>
+                <span class="occ-label">متاح</span>
+              </div>
+            </div>
+            <div class="occupancy-bar">
+              <div class="occupancy-fill" [style.width]="getOccupancyPercent() + '%'"></div>
+            </div>
+            <p class="occ-pct">{{ getOccupancyPercent() }}% مشغول</p>
+          </div>
+        </div>
+
+        <!-- Comments -->
+        <div class="comments-section">
+          <h2 class="section-title">التعليقات ({{ comments().length }})</h2>
+
+          @if (auth.isLoggedIn()) {
+            <div class="comment-form card">
+              @if (commentError()) {
+                <div class="alert alert-error">{{ commentError() }}</div>
+              }
+              @if (commentSuccess()) {
+                <div class="alert alert-success">{{ commentSuccess() }}</div>
+              }
+              <textarea
+                [(ngModel)]="newComment"
+                placeholder="أضف تعليقك..."
+                rows="3"
+                class="comment-textarea"
+              ></textarea>
+              <button
+                class="btn btn-primary"
+                (click)="submitComment()"
+                [disabled]="commentLoading() || !newComment.trim()"
+              >
+                @if (commentLoading()) { جاري... } @else { إضافة تعليق }
+              </button>
+            </div>
+          } @else {
+            <p class="login-prompt">
+              <a routerLink="/login">سجل الدخول</a> لإضافة تعليق
+            </p>
+          }
+
+          <div class="comments-list">
+            @if (comments().length === 0) {
+              <p class="no-comments">لا توجد تعليقات بعد. كن أول من يعلق!</p>
+            }
+            @for (comment of comments(); track comment.id) {
+              <div class="comment-item">
+                <div class="comment-avatar">{{ comment.username.charAt(0).toUpperCase() }}</div>
+                <div class="comment-body">
+                  <div class="comment-meta">
+                    <span class="comment-author">{{ comment.username }}</span>
+                    <span class="comment-date">{{ formatDate(comment.createdAt) }}</span>
+                  </div>
+                  <p class="comment-text">{{ comment.text }}</p>
+                </div>
+              </div>
+            }
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Sidebar -->
+      <div class="detail-sidebar">
+        <div class="card sidebar-card">
+          <h3>طلب سكن</h3>
+          @if (!auth.isLoggedIn()) {
+            <p class="sidebar-note">يجب تسجيل الدخول لتقديم طلب</p>
+            <a routerLink="/login" class="btn btn-primary btn-full">تسجيل الدخول</a>
+          } @else if (auth.user()?.hostelName) {
+            <p class="sidebar-note occupied">أنت مسجل في: <strong>{{ auth.user()!.hostelName }}</strong></p>
+          } @else if (auth.isAdmin()) {
+            <p class="sidebar-note">المسؤولون لا يمكنهم تقديم طلبات</p>
+          } @else {
+            @if (requestSuccess()) {
+              <div class="alert alert-success">{{ requestSuccess() }}</div>
+            }
+            @if (requestError()) {
+              <div class="alert alert-error">{{ requestError() }}</div>
+            }
+            @if (!requestSuccess()) {
+              <p class="sidebar-note">أود السكن في <strong>{{ hostel()!.hostelName }}</strong></p>
+              <button
+                class="btn btn-primary btn-full"
+                (click)="requestRoom()"
+                [disabled]="requestLoading() || hostel()!.currentResidents >= hostel()!.capacity"
+              >
+                @if (requestLoading()) { جاري... }
+                @else if (hostel()!.currentResidents >= hostel()!.capacity) { السكن ممتلئ }
+                @else { طلب سكن }
+              </button>
+            }
+          }
+        </div>
+      </div>
+    </div>
+  }
+</div>

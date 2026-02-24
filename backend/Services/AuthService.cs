@@ -55,7 +55,8 @@ public class AuthService
                 Username = user.Username,
                 Role = user.Role,
                 Token = GenerateJwt(user),
-                ProfileImageUrl = user.ProfileImageUrl
+                ProfileImageUrl = user.ProfileImageUrl,
+                HostelName = user.HostelName
             };
         }
 
@@ -82,7 +83,8 @@ public class AuthService
                 Username = user.Username,
                 Role = user.Role,
                 Token = GenerateJwt(user),
-                ProfileImageUrl = user.ProfileImageUrl
+                ProfileImageUrl = user.ProfileImageUrl,
+                HostelName = user.HostelName
             };
         }
 

@@ -1,1 +1,69 @@
-<p>hostel-list works!</p>
+<div class="page-container">
+  <div class="page-header">
+    <h1 class="section-title">السكنات المتاحة</h1>
+    @if (auth.isAdmin()) {
+      <a routerLink="/admin" class="btn btn-primary">
+        + إدارة السكنات
+      </a>
+    }
+  </div>
+
+  @if (loading()) {
+    <div class="loading-state">
+      <div class="spinner"></div>
+      <p>جاري تحميل السكنات...</p>
+    </div>
+  } @else if (error()) {
+    <div class="alert alert-error">{{ error() }}</div>
+  } @else if (hostels().length === 0) {
+    <div class="empty-state">
+      <div class="empty-icon">&#127968;</div>
+      <p>لا توجد سكنات متاحة حالياً</p>
+    </div>
+  } @else {
+    <div class="hostels-grid">
+      @for (hostel of hostels(); track hostel.hostelName) {
+        <a [routerLink]="['/hostels', hostel.hostelName]" class="hostel-card card">
+          <div class="hostel-image">
+            @if (hostel.imageUrls && hostel.imageUrls.length > 0) {
+              <img [src]="hostel.imageUrls[0]" [alt]="hostel.hostelName" />
+            } @else {
+              <div class="no-image">&#127968;</div>
+            }
+          </div>
+          <div class="hostel-info">
+            <h3 class="hostel-name">{{ hostel.hostelName }}</h3>
+            <p class="hostel-location">&#128205; {{ hostel.location }}</p>
+
+            <div class="occupancy">
+              <div class="occupancy-labels">
+                <span>الإشغال</span>
+                <span>{{ hostel.currentResidents }} / {{ hostel.capacity }}</span>
+              </div>
+              <div class="occupancy-bar">
+                <div
+                  class="occupancy-fill"
+                  [class]="getOccupancyClass(hostel)"
+                  [style.width]="getOccupancyPercent(hostel) + '%'"
+                ></div>
+              </div>
+            </div>
+
+            <div class="hostel-footer">
+              <span class="occupancy-badge" [class]="'badge-' + getOccupancyClass(hostel)">
+                @if (getOccupancyPercent(hostel) >= 100) {
+                  ممتلئ
+                } @else if (getOccupancyPercent(hostel) >= 60) {
+                  شبه ممتلئ
+                } @else {
+                  متاح
+                }
+              </span>
+              <span class="view-details">عرض التفاصيل &larr;</span>
+            </div>
+          </div>
+        </a>
+      }
+    </div>
+  }
+</div>

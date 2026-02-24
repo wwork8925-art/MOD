@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["src/app/services/request.service.ts"],
+  "sourcesContent": ["import { Injectable } from '@angular/core';\r\nimport { HttpClient } from '@angular/common/http';\r\nimport { Observable } from 'rxjs';\r\n\r\nexport interface HostelRequest {\r\n  id: number;\r\n  userId: number;\r\n  username: string;\r\n  hostelName: string;\r\n  status: string;\r\n  createdAt: string;\r\n}\r\n\r\n@Injectable({ providedIn: 'root' })\r\nexport class RequestService {\r\n  private readonly API = 'http://localhost:5003/api/requests';\r\n\r\n  constructor(private http: HttpClient) {}\r\n\r\n  getAll(): Observable<HostelRequest[]> {\r\n    return this.http.get<HostelRequest[]>(this.API);\r\n  }\r\n\r\n  create(hostelName: string): Observable<HostelRequest> {\r\n    return this.http.post<HostelRequest>(this.API, { hostelName });\r\n  }\r\n\r\n  updateStatus(id: number, status: string): Observable<void> {\r\n    return this.http.put<void>(`${this.API}/${id}`, { status });\r\n  }\r\n}\r\n"],
+  "mappings": ";;;;;;;;;AAcM,IAAO,iBAAP,MAAO,gBAAc;EAGL;EAFH,MAAM;EAEvB,YAAoB,MAAgB;AAAhB,SAAA,OAAA;EAAmB;EAEvC,SAAM;AACJ,WAAO,KAAK,KAAK,IAAqB,KAAK,GAAG;EAChD;EAEA,OAAO,YAAkB;AACvB,WAAO,KAAK,KAAK,KAAoB,KAAK,KAAK,EAAE,WAAU,CAAE;EAC/D;EAEA,aAAa,IAAY,QAAc;AACrC,WAAO,KAAK,KAAK,IAAU,GAAG,KAAK,GAAG,IAAI,EAAE,IAAI,EAAE,OAAM,CAAE;EAC5D;;qCAfW,iBAAc,mBAAA,UAAA,CAAA;EAAA;4EAAd,iBAAc,SAAd,gBAAc,WAAA,YADD,OAAM,CAAA;;;sEACnB,gBAAc,CAAA;UAD1B;WAAW,EAAE,YAAY,OAAM,CAAE;;;",
+  "names": []
+}

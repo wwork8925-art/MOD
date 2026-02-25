@@ -20,6 +20,11 @@ export const routes: Routes = [
     loadComponent: () =>
       import('./components/hostel-detail/hostel-detail').then((m) => m.HostelDetail),
   },
+
+  {
+    path: 'dash', loadComponent:() => import('./components/dash/dash').then((m) => m.Dash)
+
+  },
   {
     path: 'admin',
     loadComponent: () => import('./components/admin/admin').then((m) => m.Admin),

@@ -29,15 +29,14 @@ export class Register {
     if (!input.files?.length) return;
     const file = input.files[0];
     this.selectedFile = file;
+    // Show local preview immediately
     const reader = new FileReader();
     reader.onload = (e) => this.imagePreview.set(e.target?.result as string);
     reader.readAsDataURL(file);
-  }
-
-  uploadImage(): void {
-    if (!this.selectedFile) return;
+    // Auto-upload right away
     this.uploading.set(true);
-    this.auth.uploadProfileImage(this.selectedFile).subscribe({
+    this.profileImageUrl = '';
+    this.auth.uploadProfileImage(file).subscribe({
       next: (res) => {
         this.profileImageUrl = res.imageUrl;
         this.uploading.set(false);

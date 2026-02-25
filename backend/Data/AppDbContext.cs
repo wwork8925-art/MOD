@@ -1,8 +1,12 @@
 // =============================================================================
-// AppDbContext.cs — Entity Framework Core --> من بدل الأسكيو أل
+// AppDbContext.cs — Entity Framework Core + ASP.NET Identity
+// الكونتيكست هو الجسر بين الكود والقاعدة البيانات
+// بعد إضافة Identity صار يرث من IdentityDbContext بدل DbContext
 // =============================================================================
 
 using backend.Models;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using System.Text.Json;
@@ -10,18 +14,19 @@ using System.Text.Json;
 
 namespace backend.Data
 {
-    public class AppDbContext : DbContext
+    // IdentityDbContext<AppUser, IdentityRole<int>, int>
+    // AppUser        : كلاس المستخدم المخصص
+    // IdentityRole<int> : كلاس الدور (Role) — نستخدم int كمفتاح أساسي
+    // int            : نوع المفتاح الأساسي لجميع جداول Identity
+    public class AppDbContext : IdentityDbContext<AppUser, IdentityRole<int>, int>
     {
-        
-        
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
         {
         }
 
         // -----------------------------------------------------------------
-        // تحديد الجداول الوفرييبل الخاصه بهن 
+        // جداولنا المخصصة — Identity تضيف جداولها تلقائياً (AspNetUsers، AspNetRoles...)
         // -----------------------------------------------------------------
-        public DbSet<User> Users => Set<User>();
         public DbSet<Hostel> Hostels => Set<Hostel>();
         public DbSet<Comment> Comments => Set<Comment>();
         public DbSet<HostelRequest> HostelRequests => Set<HostelRequest>();
@@ -55,21 +60,17 @@ namespace backend.Data
                       );
             });
 
-            // --- User entity configuration ---
-            modelBuilder.Entity<User>(entity =>
+            // --- AppUser entity configuration ---
+            // Identity تدير مفتاح AppUser تلقائيا، نحن نضيف فقط علاقة Hostel
+            modelBuilder.Entity<AppUser>(entity =>
             {
-                entity.HasKey(u => u.Id);                    // 
-
-                // One-to-many: Hostel → Users
+                // One-to-many: Hostel → Users (المستخدم ينتمي لسكن واحد)
                 entity.HasOne(u => u.Hostel)
                       .WithMany(h => h.Users)
                       .HasForeignKey(u => u.HostelName)
-                      .OnDelete(DeleteBehavior.SetNull);     // راجع هذا الكود للمشاريع المستقبلية 
+                      .OnDelete(DeleteBehavior.SetNull);     // عند حذف السكن، يبقى المستخدم لكن HostelName يصبح null
 
-                // Unique constraint on Username (used for login)
-                entity.HasIndex(u => u.Username).IsUnique();
-
-                // Unique constraint on CivilNumber
+                // CivilNumber يجب أن يكون فريداً
                 entity.HasIndex(u => u.CivilNumber).IsUnique();
             });
 

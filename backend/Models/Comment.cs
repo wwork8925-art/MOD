@@ -20,20 +20,28 @@ namespace backend.Models
         //تاريخ التعليق
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
-        // المفاتيح المشتركة
+        // -----------------------------------------------------------------
+        // النافيجيشن بروبرتي : من كتب التعليق
+        // -----------------------------------------------------------------
 
-        // الفورن كي
+        // رقم المستخدم (فورن كي لجدول AppUsers)
         [Required]
         public int UserId { get; set; }
 
+        // كائن المستخدم الكامل — AppUser بعد انتقالنا لنظام Identity
         [ForeignKey(nameof(UserId))]
-        public User? User { get; set; }
+        public AppUser? User { get; set; }
 
-        // Which hostel the comment is about
+        // -----------------------------------------------------------------
+        // أي سكن يخص هذا التعليق
+        // -----------------------------------------------------------------
+
+        // اسم السكن (فورن كي لجدول Hostels)
         [Required]
         [MaxLength(200)]
         public string HostelName { get; set; } = string.Empty;
 
+        // كائن السكن الكامل
         [ForeignKey(nameof(HostelName))]
         public Hostel? Hostel { get; set; }
     }

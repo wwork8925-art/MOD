@@ -10,7 +10,7 @@ import { AuthService } from '../../services/auth.service';
   styleUrl: './login.css',
 })
 export class Login {
-  private auth = inject(AuthService);
+  private auth = inject(AuthService);      // هنا ادخلنا اوث سيرفس جاخل لوجن تس 
   private router = inject(Router);
 
   username = '';

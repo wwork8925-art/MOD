@@ -26,12 +26,9 @@
               id="profile-img"
               style="display:none"
             />
-            <label for="profile-img" class="btn btn-secondary btn-sm">اختر صورة</label>
-            @if (selectedFile && !profileImageUrl) {
-              <button type="button" class="btn btn-primary btn-sm" (click)="uploadImage()" [disabled]="uploading()">
-                @if (uploading()) { جاري الرفع... } @else { رفع الصورة }
-              </button>
-            }
+            <label for="profile-img" class="btn btn-secondary btn-sm" [class.disabled]="uploading()">
+              @if (uploading()) { جاري الرفع... } @else { اختر صورة }
+            </label>
             @if (profileImageUrl) {
               <span class="success-badge">&#10003; تم الرفع</span>
             }

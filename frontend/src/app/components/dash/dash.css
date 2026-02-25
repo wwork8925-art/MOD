@@ -1,0 +1,54 @@
+.dash-container {
+  max-width: 600px;
+  margin: 12px auto;
+  padding: 0 8px;
+}
+
+.dash-container h1 {
+  font-size: 14px;
+  font-weight: bold;
+  color: #000080;
+  margin-bottom: 8px;
+  border-bottom: 1px solid #808080;
+  padding-bottom: 4px;
+}
+
+.request-status-card {
+  background: #ffffff;
+  border: 1px solid #808080;
+  padding: 12px;
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  border-top: 2px solid #808080;
+  border-left: 2px solid #808080;
+  border-right: 2px solid #ffffff;
+  border-bottom: 2px solid #ffffff;
+}
+
+.request-status-card.approved { background: #ccffcc; }
+.request-status-card.rejected { background: #ffcccc; }
+.request-status-card.pending  { background: #ffffcc; }
+
+.status-icon { font-size: 1.5rem; }
+
+.status-label {
+  font-size: 13px;
+  font-weight: bold;
+  color: #000;
+  margin-bottom: 4px;
+}
+
+.hostel-name { color: #000; font-size: 13px; margin-bottom: 2px; }
+.request-date { color: #808080; font-size: 12px; }
+
+.no-request-card {
+  background: #ffffff;
+  border: 1px solid #808080;
+  padding: 12px;
+  text-align: center;
+  color: #000;
+  font-size: 13px;
+}
+
+.no-request-card a { color: #0000ee; }

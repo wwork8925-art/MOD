@@ -1,0 +1,41 @@
+<div class="dash-container">
+  <h1>حالة طلبي</h1>
+
+  <!-- جاري التحميل -->
+  @if (loading()) {
+    <p>جاري التحميل...</p>
+  }
+
+  <!-- لا يوجد طلب أو خطأ -->
+  @else if (errorMsg()) {
+    <div class="no-request-card">
+      <p>{{ errorMsg() }}</p>
+      <a routerLink="/hostels">تصفح السكنات لتقديم طلب</a>
+    </div>
+  }
+
+  <!-- عرض حالة الطلب الخاص بالمستخدم -->
+  @else if (myRequest()) {
+    <div class="request-status-card"
+      [class.approved]="myRequest()!.status === 'Approved'"
+      [class.rejected]="myRequest()!.status === 'Rejected'"
+      [class.pending]="myRequest()!.status === 'Pending'"
+    >
+      <div class="status-icon">
+        @if (myRequest()!.status === 'Approved')      { ✅ }
+        @else if (myRequest()!.status === 'Rejected') { ❌ }
+        @else                                          { ⏳ }
+      </div>
+
+      <div class="status-info">
+        <p class="status-label">
+          @if (myRequest()!.status === 'Approved')      { تمت الموافقة على طلبك }
+          @else if (myRequest()!.status === 'Rejected') { تم رفض طلبك }
+          @else                                          { طلبك قيد المراجعة }
+        </p>
+        <p class="hostel-name">السكن المطلوب: <strong>{{ myRequest()!.hostelName }}</strong></p>
+        <p class="request-date">تاريخ الطلب: {{ myRequest()!.createdAt | date:'mediumDate' }}</p>
+      </div>
+    </div>
+  }
+</div>

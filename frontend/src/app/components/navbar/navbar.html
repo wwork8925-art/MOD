@@ -8,7 +8,6 @@
 
   <ul class="navbar-links">
     <li><a routerLink="/hostels" class="nav-link">السكنات</a></li>
-
     @if (auth.isAdmin()) {
       <li><a routerLink="/admin" class="nav-link nav-link-admin">لوحة التحكم</a></li>
     }
@@ -24,6 +23,7 @@
         }
         <span class="username">{{ auth.user()!.username }}</span>
       </div>
+      <a routerLink="/dash" class="btn btn-white">طلباتي</a>
       <button class="btn btn-outline-white" (click)="logout()">تسجيل الخروج</button>
     } @else {
       <a routerLink="/login" class="btn btn-outline-white">تسجيل الدخول</a>

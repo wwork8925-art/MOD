@@ -20,8 +20,9 @@ namespace backend.Models
         [Required]
         public int UserId { get; set; }
 
+        // AppUser بدلاً من User بعد الانتقال لنظام Identity
         [ForeignKey(nameof(UserId))]
-        public User? User { get; set; }
+        public AppUser? User { get; set; }
 
         // السكن اللي يريده المستخدم
         [Required]

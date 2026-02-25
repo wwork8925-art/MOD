@@ -22,7 +22,6 @@ export class AuthService {
   readonly isAdmin = computed(() => this._user()?.role === 'Admin');
 
   constructor(private http: HttpClient) {}
-
   private loadUser(): AuthResponse | null {
     try {
       const stored = localStorage.getItem(this.STORAGE_KEY);

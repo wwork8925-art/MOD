@@ -1,136 +1,160 @@
+﻿// =============================================================================
+// Program.cs  نقطة البداية للتطبيق
 // =============================================================================
-// Program.cs — Entry point for the Hostel Management API
-// =============================================================================
-// Configures:
-//   - SQLite via Entity Framework Core
-//   - JWT Bearer Authentication
-//   - CORS (so Angular can call the API)
-//   - Controller routing
-//   - Automatic database creation with seed data
+// يضبط هذا الملف كل خدمات التطبيق قبل تشغيله:
+//   1. قاعدة البيانات SQLite عبر Entity Framework Core
+//   2. ASP.NET Core Identity (إدارة المستخدمين والأدوار)
+//   3. JWT Bearer Authentication (التوكن)
+//   4. CORS (السماح لـ Angular بالاتصال)
+//   5. بذر البيانات الأولية (أدوار + حساب Admin)
 // =============================================================================
 
 using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
-using backend.Services;
 using backend.Data;
-
+using backend.Models;
+using backend.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // -----------------------------------------------------------------
-// 1. Register the SQLite database context
+// 1. تسجيل قاعدة البيانات SQLite
 // -----------------------------------------------------------------
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 // -----------------------------------------------------------------
-// 2. Register application services
+// 2. إضافة ASP.NET Core Identity
+// -----------------------------------------------------------------
+// نستخدم AddIdentityCore بدل AddIdentity لأن AddIdentity تغير
+// نظام المصادقة الافتراضي إلى Cookies وهذا يكسر JWT
+// AddIdentityCore تضيف الخدمات فقط دون تغيير نظام المصادقة
+builder.Services.AddIdentityCore<AppUser>(options =>
+{
+    // إعدادات كلمة المرور  خففناها لسهولة الاختبار
+    options.Password.RequiredLength         = 6;
+    options.Password.RequireNonAlphanumeric = false;
+    options.Password.RequireUppercase       = false;
+    options.Password.RequireDigit           = false;
+})
+.AddRoles<IdentityRole<int>>()              // تفعيل نظام الأدوار
+.AddEntityFrameworkStores<AppDbContext>()   // ربط Identity بقاعدة البيانات
+.AddDefaultTokenProviders();                // لazard tokens (إعادة تعيين كلمة المرور)
+
+// -----------------------------------------------------------------
+// 3. تسجيل خدمات التطبيق
 // -----------------------------------------------------------------
 builder.Services.AddScoped<AuthService>();
 
 // -----------------------------------------------------------------
-// 3. Configure JWT authentication
+// 4. إعداد JWT Authentication
 // -----------------------------------------------------------------
+// نضيف JWT بشكل منفصل ليكون هو نظام المصادقة الافتراضي (وليس Cookies)
 var jwtKey = builder.Configuration["Jwt:Key"]!;
 builder.Services.AddAuthentication(options =>
 {
     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme    = JwtBearerDefaults.AuthenticationScheme;
 })
 .AddJwtBearer(options =>
 {
     options.TokenValidationParameters = new TokenValidationParameters
     {
-        ValidateIssuer = true,
-        ValidateAudience = true,
-        ValidateLifetime = true,
+        ValidateIssuer           = true,
+        ValidateAudience         = true,
+        ValidateLifetime         = true,
         ValidateIssuerSigningKey = true,
-        ValidIssuer = builder.Configuration["Jwt:Issuer"],
-        ValidAudience = builder.Configuration["Jwt:Audience"],
-        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey))
+        ValidIssuer              = builder.Configuration["Jwt:Issuer"],
+        ValidAudience            = builder.Configuration["Jwt:Audience"],
+        IssuerSigningKey         = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey))
     };
 });
 
 // -----------------------------------------------------------------
-// 4. Add controllers and CORS
+// 5. إضافة الكونترولرات و CORS
 // -----------------------------------------------------------------
 builder.Services.AddControllers();
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAngular", policy =>
     {
-        policy.WithOrigins("http://localhost:4200")   // Angular dev server
+        policy.WithOrigins("http://localhost:4200")
               .AllowAnyHeader()
               .AllowAnyMethod();
     });
 });
 
-// Swagger / OpenAPI (optional, useful for testing)
 builder.Services.AddOpenApi();
 
 var app = builder.Build();
 
 // -----------------------------------------------------------------
-// 5. Ensure the database is created (applies migrations / creates tables)
+// 6. إنشاء قاعدة البيانات وبذر البيانات الأولية
 // -----------------------------------------------------------------
 using (var scope = app.Services.CreateScope())
 {
-    var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-    db.Database.EnsureCreated(); // Creates the SQLite DB file if it doesn't exist
+    var db          = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+    var userManager = scope.ServiceProvider.GetRequiredService<UserManager<AppUser>>();
+    var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole<int>>>();
 
-    // Seed the admin account with a real hashed password if it doesn't exist yet
-    if (!db.Users.Any(u => u.Username == "admin"))
+    // إنشاء جداول قاعدة البيانات إذا لم تكن موجودة
+    db.Database.EnsureCreated();
+
+    // ----- بذر الأدوار -----
+    // نتأكد أن الأدوار موجودة في جدول AspNetRoles
+    string[] roles = ["Admin", "User"];
+    foreach (var role in roles)
     {
-        var authService = scope.ServiceProvider.GetRequiredService<AuthService>();
-        // Register the admin account (password: Admin123!)
-        // We manually set the role to Admin after registration
-        var adminUser = new backend.Models.User
+        if (!await roleManager.RoleExistsAsync(role))
+            await roleManager.CreateAsync(new IdentityRole<int>(role));
+    }
+
+    // ----- بذر حساب Admin -----
+    // نتحقق بـ UserName (حرف N كبير  هكذا Identity)
+    if (await userManager.FindByNameAsync("admin") == null)
+    {
+        var admin = new AppUser
         {
-            Username = "admin",
-            CivilNumber = "0000000000",
-            Number = "0000000000",
-            PasswordHash = "", // Will be set below
-            Role = "Admin",
+            UserName        = "admin",
+            CivilNumber     = "0000000000",
+            Number          = "0000000000",
             ProfileImageUrl = ""
         };
-        // Use HMAC hashing consistent with AuthService
-        using var hmac = new System.Security.Cryptography.HMACSHA256();
-        var hash = hmac.ComputeHash(System.Text.Encoding.UTF8.GetBytes("Admin123!"));
-        adminUser.PasswordHash = Convert.ToBase64String(hmac.Key) + ":" + Convert.ToBase64String(hash);
-        db.Users.Add(adminUser);
-        db.SaveChanges();
-    }
 
-   
+        // CreateAsync يشفر كلمة المرور تلقائيا
+        var result = await userManager.CreateAsync(admin, "Admin123!");
+
+        if (result.Succeeded)
+            // إسناد دور Admin للحساب
+            await userManager.AddToRoleAsync(admin, "Admin");
     }
+}
 
 // -----------------------------------------------------------------
-// 6. Ensure wwwroot/uploads directories exist for uploaded images
+// 7. إنشاء مجلدات رفع الصور إذا لم تكن موجودة
 // -----------------------------------------------------------------
 var webRoot = app.Environment.WebRootPath ?? Path.Combine(Directory.GetCurrentDirectory(), "wwwroot");
 Directory.CreateDirectory(Path.Combine(webRoot, "uploads", "profiles"));
 Directory.CreateDirectory(Path.Combine(webRoot, "uploads", "hostels"));
 
 // -----------------------------------------------------------------
-// 7. Configure the HTTP request pipeline
+// 8. إعداد pipeline الطلبات HTTP
 // -----------------------------------------------------------------
 if (app.Environment.IsDevelopment())
-{
     app.MapOpenApi();
-}
 
 app.UseStaticFiles(new StaticFileOptions
 {
     OnPrepareResponse = ctx =>
-    {
-        ctx.Context.Response.Headers.Append("Access-Control-Allow-Origin", "http://localhost:4200");
-    }
-});                                    // Serve uploaded images from wwwroot with CORS
-app.UseCors("AllowAngular");       // Enable CORS for the Angular front-end
-app.UseAuthentication();            // JWT auth middleware
-app.UseAuthorization();             // Role-based authorization
-app.MapControllers();               // Map attribute-routed controllers
+        ctx.Context.Response.Headers.Append("Access-Control-Allow-Origin", "http://localhost:4200")
+});
+
+app.UseCors("AllowAngular");
+app.UseAuthentication();
+app.UseAuthorization();
+app.MapControllers();
 
 app.Run();

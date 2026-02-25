@@ -1,4 +1,4 @@
-/* Global Styles — Hostel Management App */
+/* Global Styles — Classic 90s / Windows 95 Style */
 
 *, *::before, *::after {
   box-sizing: border-box;
@@ -7,12 +7,239 @@
 }
 
 body {
-  font-family: 'Segoe UI', Arial, sans-serif;
-  background: #f0f4f8;
-  color: #1a1a2e;
+  font-family: Arial, 'Times New Roman', sans-serif;
+  background: #c0c0c0;
+  color: #000;
   min-height: 100vh;
   direction: rtl;
+  font-size: 13px;
 }
+
+a {
+  color: #0000ee;
+  text-decoration: underline;
+}
+
+a:visited {
+  color: #551a8b;
+}
+
+button {
+  cursor: pointer;
+  font-family: Arial, sans-serif;
+}
+
+input, textarea, select {
+  font-family: Arial, sans-serif;
+  font-size: 13px;
+}
+
+/* ── Classic Raised Button (Windows 95) ── */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 3px 12px;
+  font-size: 13px;
+  font-family: Arial, sans-serif;
+  background: #c0c0c0;
+  color: #000;
+  border: none;
+  border-top: 2px solid #ffffff;
+  border-left: 2px solid #ffffff;
+  border-right: 2px solid #808080;
+  border-bottom: 2px solid #808080;
+  cursor: pointer;
+  min-width: 75px;
+  justify-content: center;
+}
+
+.btn:active {
+  border-top: 2px solid #808080;
+  border-left: 2px solid #808080;
+  border-right: 2px solid #ffffff;
+  border-bottom: 2px solid #ffffff;
+}
+
+.btn:hover {
+  background: #d4d4d4;
+}
+
+.btn-primary   { background: #c0c0c0; color: #000000; }
+.btn-success   { background: #c0c0c0; color: #000000; }
+.btn-danger    { background: #c0c0c0; color: #000000; }
+.btn-secondary { background: #c0c0c0; color: #000000; }
+.btn-warning   { background: #c0c0c0; color: #000000; }
+.btn-sm        { padding: 2px 8px; font-size: 12px; }
+
+.btn-outline {
+  background: #c0c0c0;
+  border-top: 2px solid #ffffff;
+  border-left: 2px solid #ffffff;
+  border-right: 2px solid #808080;
+  border-bottom: 2px solid #808080;
+  color: #000;
+}
+
+/* ── Classic Inset Card / Panel ── */
+.card {
+  background: #c0c0c0;
+  border-top: 2px solid #808080;
+  border-left: 2px solid #808080;
+  border-right: 2px solid #ffffff;
+  border-bottom: 2px solid #ffffff;
+  padding: 8px;
+}
+
+.card:hover {
+  background: #c0c0c0;
+  transform: none;
+}
+
+/* ── Form Fields ── */
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin-bottom: 10px;
+}
+
+.form-group label {
+  font-weight: bold;
+  font-size: 13px;
+  color: #000;
+}
+
+.form-group input,
+.form-group textarea,
+.form-group select {
+  padding: 2px 4px;
+  border-top: 2px solid #808080;
+  border-left: 2px solid #808080;
+  border-right: 2px solid #ffffff;
+  border-bottom: 2px solid #ffffff;
+  background: #ffffff;
+  color: #000;
+  font-size: 13px;
+  width: 100%;
+}
+
+.form-group input:focus,
+.form-group textarea:focus,
+.form-group select:focus {
+  outline: 1px dotted #000;
+}
+
+.error-msg  { color: #ff0000; font-size: 12px; margin-top: 3px; }
+.success-msg { color: #008000; font-size: 12px; margin-top: 3px; }
+
+.page-container {
+  max-width: 1000px;
+  margin: 12px auto;
+  padding: 0 8px;
+}
+
+/* ── Section Title ── */
+.section-title {
+  font-size: 14px;
+  font-weight: bold;
+  color: #000080;
+  margin-bottom: 8px;
+  border-bottom: 1px solid #808080;
+  padding-bottom: 3px;
+  display: block;
+}
+
+/* ── Tags ── */
+.tag         { display: inline; font-size: 12px; font-weight: bold; }
+.tag-admin   { color: #800000; }
+.tag-user    { color: #000080; }
+.tag-pending  { color: #808000; }
+.tag-approved { color: #008000; }
+.tag-rejected { color: #ff0000; }
+
+/* ── Table ── */
+.table-container {
+  overflow-x: auto;
+  border: 1px solid #808080;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  background: #ffffff;
+  font-size: 13px;
+}
+
+table th {
+  background: #000080;
+  color: #ffffff;
+  padding: 4px 8px;
+  text-align: right;
+  font-size: 13px;
+  border: 1px solid #808080;
+}
+
+table td {
+  padding: 3px 8px;
+  border: 1px solid #d0d0d0;
+  color: #000;
+}
+
+table tr:hover td {
+  background: #000080;
+  color: #fff;
+}
+
+table tr:hover td a {
+  color: #aad4ff;
+}
+
+table tr:hover td .user-avatar-ph {
+  background: #ffffff;
+  color: #000080;
+  border-color: #000080;
+}
+
+/* ── Alerts ── */
+.alert {
+  padding: 6px 10px;
+  margin-bottom: 8px;
+  font-size: 13px;
+  border: 1px solid;
+}
+
+.alert-error {
+  background: #ffcccc;
+  color: #cc0000;
+  border-color: #cc0000;
+}
+
+.alert-success {
+  background: #ccffcc;
+  color: #006600;
+  border-color: #006600;
+}
+
+/* ── Spinner ── */
+.spinner {
+  width: 20px;
+  height: 20px;
+  border: 3px solid #808080;
+  border-top-color: #000080;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  margin: 1rem auto;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.main-content {
+  min-height: calc(100vh - 44px);
+}
+
 
 a {
   text-decoration: none;
@@ -110,13 +337,13 @@ input, textarea, select {
 .card {
   background: #fff;
   border-radius: 12px;
-  box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+  box-shadow: 0 1px 4px rgba(0,0,0,0.08), 0 4px 16px rgba(0,0,0,0.06);
   overflow: hidden;
   transition: box-shadow 0.2s, transform 0.2s;
 }
 
 .card:hover {
-  box-shadow: 0 6px 24px rgba(0,0,0,0.14);
+  box-shadow: 0 4px 20px rgba(0,0,0,0.12);
   transform: translateY(-2px);
 }
 
@@ -140,9 +367,14 @@ input, textarea, select {
   border: 1.5px solid #d1d5db;
   border-radius: 8px;
   background: #f9fafb;
-  color: #111;
+  color: #111827;
   transition: border-color 0.2s, box-shadow 0.2s;
   width: 100%;
+}
+
+.form-group input::placeholder,
+.form-group textarea::placeholder {
+  color: #9ca3af;
 }
 
 .form-group input:focus,
@@ -150,7 +382,7 @@ input, textarea, select {
 .form-group select:focus {
   outline: none;
   border-color: #2563eb;
-  box-shadow: 0 0 0 3px rgba(37,99,235,0.15);
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
   background: #fff;
 }
 
@@ -240,6 +472,7 @@ table td {
   padding: 0.75rem 1rem;
   border-bottom: 1px solid #e5e7eb;
   font-size: 0.9rem;
+  color: #374151;
 }
 
 table tr:last-child td {
@@ -247,7 +480,8 @@ table tr:last-child td {
 }
 
 table tr:hover td {
-  background: #f0f4f8;
+  background: #f9fafb;
+  color: #374151;
 }
 
 .alert {
